@@ -1,16 +1,22 @@
-import { Controller, Get, Param, Query, UseFilters, UsePipes, ValidationPipe } from "@nestjs/common";
-import { UserQueryDto } from "./dto/userQueryDto";
-import { ValidationExceptionFilter } from "./filters/validationExceptionFilter";
+import {
+   Controller,
+   Get,
+   Param,
+   Query,
+   UseFilters,
+   UsePipes,
+   ValidationPipe,
+} from '@nestjs/common';
+import { UserQueryDto } from './dto/userQueryDto';
+import { ValidationExceptionFilter } from './filters/validationExceptionFilter';
+import { UserService } from './user.service';
 
-@Controller("/user")
-@UseFilters(ValidationExceptionFilter)
+@Controller('/user')
 export class UserController {
-   constructor()  {
-
-   }
+   constructor(private userService: UserService) {}
    @Get()
    @UsePipes(new ValidationPipe())
-   createUser(@Query() query: UserQueryDto) {
-      return {...query}
+   getUser(@Query() query: UserQueryDto) {
+      return this.userService.createUser(query);
    }
 }
