@@ -8,7 +8,6 @@ import {
    ValidationPipe,
 } from '@nestjs/common';
 import { UserQueryDto } from './dto/userQueryDto';
-import { ValidationExceptionFilter } from './filters/validationExceptionFilter';
 import { UserService } from './user.service';
 
 @Controller('/user')

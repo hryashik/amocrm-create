@@ -1,12 +1,9 @@
-import {
-   BadRequestException,
-   ForbiddenException,
-   Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { UserQueryDto } from 'src/user/dto/userQueryDto';
-import { UserResponseType } from 'src/user/types/userResponseType';
+import { LeadType } from 'src/user/types/leadType';
+import { ContactType, UserResponseType } from 'src/user/types/userResponseType';
 
 @Injectable()
 export class AmocrmService {
@@ -15,7 +12,7 @@ export class AmocrmService {
    async createUser(dto: UserQueryDto) {
       try {
          const token = this.configService.get('ACCESS_TOKEN');
-         const { data } = await axios.post(
+         const { data } = await axios.post<UserResponseType>(
             `https://tsukikohaya.amocrm.ru/api/v4/contacts`,
             [
                {
@@ -51,14 +48,14 @@ export class AmocrmService {
                },
             },
          );
-         return data;
+         return data._embedded.contacts[0];
       } catch (error) {
          console.error(error);
          throw new BadRequestException({ error });
       }
    }
 
-   async findUser(phone: string) {
+   async findUser(phone: string): Promise<ContactType | undefined> {
       try {
          const token = this.configService.get('ACCESS_TOKEN');
          const { data } = await axios.get<UserResponseType>(
@@ -80,10 +77,10 @@ export class AmocrmService {
       }
    }
 
-   async updateUser(dto: UserQueryDto, id: number) {
+   async updateUser(dto: UserQueryDto, id: number): Promise<ContactType> {
       try {
          const token = this.configService.get('ACCESS_TOKEN');
-         const { data } = await axios.patch(
+         const { data } = await axios.patch<UserResponseType>(
             `https://tsukikohaya.amocrm.ru/api/v4/contacts/${id}`,
             {
                id,
@@ -109,6 +106,33 @@ export class AmocrmService {
             },
          );
          console.log(data);
+         return data._embedded.contacts[0];
+      } catch (error) {
+         console.error(error);
+         throw new BadRequestException({ error });
+      }
+   }
+
+   async createLead(user: ContactType): Promise<LeadType[]> {
+      try {
+         const token = this.configService.get('ACCESS_TOKEN');
+         const { data } = await axios.post(
+            `https://tsukikohaya.amocrm.ru/api/v4/leads/complex`,
+            [
+               {
+                  name: 'Сделка ...',
+                  price: 10000,
+                  _embedded: {
+                     contacts: [user],
+                  },
+               },
+            ],
+            {
+               headers: {
+                  Authorization: `Bearer ${token}`,
+               },
+            },
+         );
          return data;
       } catch (error) {
          console.error(error);
