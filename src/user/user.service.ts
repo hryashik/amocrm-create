@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserQueryDto } from './dto/userQueryDto';
 import { AmocrmService } from 'src/amo/amocrm.service';
-import { ContactType } from './types/userResponseType';
+
 
 @Injectable()
 export class UserService {
@@ -9,15 +9,15 @@ export class UserService {
 
    async createUser(dto: UserQueryDto) {
       const user = await this.amocrmService.findUser(dto.phone);
-      let lead: ContactType;
+      let id: number
       if (user) {
          const updateUser = await this.amocrmService.updateUser(dto, user.id);
-         lead = updateUser;
+         return updateUser;
       } else {
          const newUser = await this.amocrmService.createUser(dto);
-         lead = newUser;
+         id = newUser.id;
       }
-      const data = await this.amocrmService.createLead(lead)
-      return data;
+      const data = await this.amocrmService.createLead(id)
+      return data
    }
 }

@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { UserQueryDto } from 'src/user/dto/userQueryDto';
 import { LeadType } from 'src/user/types/leadType';
+import { UpdateResponseType } from 'src/user/types/updateResponseType';
 import { ContactType, UserResponseType } from 'src/user/types/userResponseType';
 
 @Injectable()
@@ -77,10 +78,10 @@ export class AmocrmService {
       }
    }
 
-   async updateUser(dto: UserQueryDto, id: number): Promise<ContactType> {
+   async updateUser(dto: UserQueryDto, id: number): Promise<UpdateResponseType> {
       try {
          const token = this.configService.get('ACCESS_TOKEN');
-         const { data } = await axios.patch<UserResponseType>(
+         const { data } = await axios.patch<UpdateResponseType>(
             `https://tsukikohaya.amocrm.ru/api/v4/contacts/${id}`,
             {
                id,
@@ -105,15 +106,14 @@ export class AmocrmService {
                },
             },
          );
-         console.log(data);
-         return data._embedded.contacts[0];
+         return data
       } catch (error) {
          console.error(error);
          throw new BadRequestException({ error });
       }
    }
 
-   async createLead(user: ContactType): Promise<LeadType[]> {
+   async createLead(id: number): Promise<LeadType[]> {
       try {
          const token = this.configService.get('ACCESS_TOKEN');
          const { data } = await axios.post(
@@ -123,7 +123,7 @@ export class AmocrmService {
                   name: 'Сделка ...',
                   price: 10000,
                   _embedded: {
-                     contacts: [user],
+                     contacts: [{ id }],
                   },
                },
             ],
