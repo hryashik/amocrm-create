@@ -10,6 +10,7 @@ import { ContactType, UserResponseType } from 'src/user/types/userResponseType';
 export class AmocrmService {
    constructor(private configService: ConfigService) {}
 
+   // Создание контакта
    async createUser(dto: UserQueryDto) {
       try {
          const token = this.configService.get('ACCESS_TOKEN');
@@ -56,6 +57,7 @@ export class AmocrmService {
       }
    }
 
+   // Найти и вернуть контакт по номеру телефона
    async findUser(phone: string): Promise<ContactType | undefined> {
       try {
          const token = this.configService.get('ACCESS_TOKEN');
@@ -78,6 +80,7 @@ export class AmocrmService {
       }
    }
 
+   // Обновить данные контакта
    async updateUser(dto: UserQueryDto, id: number): Promise<UpdateResponseType> {
       try {
          const token = this.configService.get('ACCESS_TOKEN');
@@ -113,6 +116,7 @@ export class AmocrmService {
       }
    }
 
+   // Создать лид по id контакта
    async createLead(id: number): Promise<LeadType[]> {
       try {
          const token = this.configService.get('ACCESS_TOKEN');

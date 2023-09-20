@@ -13,6 +13,7 @@ import { UserService } from './user.service';
 @Controller('/user')
 export class UserController {
    constructor(private userService: UserService) {}
+   
    @Get()
    @UsePipes(new ValidationPipe())
    getUser(@Query() query: UserQueryDto) {
